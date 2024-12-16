@@ -1,6 +1,5 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
-import { mockTransactions } from "../../data/mockData";
 import LabelImportantOutlinedIcon from '@mui/icons-material/LabelImportantOutlined';
 import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
@@ -31,9 +30,10 @@ const Dashboard = () => {
       try {
         const response = await fetch('http://158.247.122.111:8080/api/rubros');
         const result = await response.json();
-        console.log(result.data);
+        const dataFinal = result.data 
+        console.log();
         
-        const filteredData = result.data.filter(item => (item.presupuestoEjecutado / item.presupuestoTotal) < 1);
+        const filteredData = dataFinal.filter(item => (item.presupuestoEjecutado / item.presupuestoTotal) < 1);
         const sortedData = filteredData.sort((a, b) => {
           const percentA = (a.presupuestoEjecutado / a.presupuestoTotal);
           const percentB = (b.presupuestoEjecutado / b.presupuestoTotal);
