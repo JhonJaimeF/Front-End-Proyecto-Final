@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
-import { tokens } from "../theme";
 
 const BarChart = ({ isDashboard = false }) => {
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode); // Define los colores dependiendo del tema
+
 
   const [data, setData] = useState([]);
 
@@ -18,12 +17,12 @@ const BarChart = ({ isDashboard = false }) => {
         const formattedData = result.data.map((item) => {
           const total = item.presupuestoTotal || 0;
           const usado = item.presupuestoEjecutado || 0;
-          const restante = total - usado;
+          const Libre = total - usado;
 
           return {
             nombre: item.nombre || "Desconocido",
             usado,
-            restante,
+            Libre,
           };
         });
 
@@ -39,7 +38,7 @@ const BarChart = ({ isDashboard = false }) => {
   return (
     <ResponsiveBar
       data={data}
-      keys={["usado", "restante"]}
+      keys={["usado", "Libre"]}
       indexBy="nombre"
       margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}
@@ -67,8 +66,8 @@ const BarChart = ({ isDashboard = false }) => {
         tickRotation: 0,
         legend: isDashboard ? undefined : "Presupuesto",
         legendPosition: "middle",
-        legendOffset: -40,
-        tickColor: theme.palette.mode === "dark" ? "#ffffff" : "#000000", // Ajustar color del eje Y según el tema
+        legendOffset: 10,  // Ajusta este valor para mover el título hacia arriba
+        tickColor: theme.palette.mode === "dark" ? "#ffffff" : "#000000",
       }}
       theme={{
         axis: {
