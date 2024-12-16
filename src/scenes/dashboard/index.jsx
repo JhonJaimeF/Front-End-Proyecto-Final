@@ -1,18 +1,47 @@
 import { Box, Typography, useTheme } from "@mui/material";
-import { tokens } from "../../theme";
+import { tokens} from "../../theme";
 import { mockTransactions } from "../../data/mockData";
-import EmailIcon from "@mui/icons-material/Email";
-import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import TrafficIcon from "@mui/icons-material/Traffic";
+import LabelImportantOutlinedIcon from '@mui/icons-material/LabelImportantOutlined';
 import LineChart from "../../components/LineChart";
 import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
+import React, { useEffect,useState } from 'react';
 import ProgressCircleChampain from "../../components/ProgressCircleChampain";
+
 
 const Dashboard = () => {
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+  const colors = tokens(theme.palette.mode); 
+  const [data, setData] = useState([]); 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        //const response = await fetch('http://158.247.122.111:8080/api/rubros');
+        const response = await fetch('http://localhost:8080/api/rubros');
+        const result = await response.json();
+        console.log(result.data);
+        
+        // Filtrar datos con 100% de ejecución
+        const filteredData = result.data.filter(item => (item.presupuestoEjecutado / item.presupuestoTotal) < 1);
+  
+        // Ordenar los datos por porcentaje de ejecución (presupuestoEjecutado / presupuestoTotal)
+        const sortedData = filteredData.sort((a, b) => {
+          const percentA = (a.presupuestoEjecutado / a.presupuestoTotal);
+          const percentB = (b.presupuestoEjecutado / b.presupuestoTotal);
+          return percentB - percentA;
+        });
+  
+        setData(sortedData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
+
 
   return (
     <Box m="20px">
@@ -70,7 +99,7 @@ const Dashboard = () => {
             fontWeight="600"
             sx={{ padding: "30px 30px 0 30px" }}
           >
-            Sales Quantity
+            Rubros por Categoria
           </Typography>
           <Box height="250px" mt="-20px">
             <BarChart isDashboard={true} />
@@ -127,82 +156,22 @@ const Dashboard = () => {
         </Box>
 
         {/* ROW 2 */}
-        <Box
-          gridColumn="span 3"
-          backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <StatBox
-            title="12,361"
-            subtitle="Emails Sent"
-            progress="0.75"
-            increase="+14%"
-            icon={
-              <EmailIcon
-                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-              />
-            }
-          />
-        </Box>
-        <Box
-          gridColumn="span 3"
-          backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <StatBox
-            title="431,225"
-            subtitle="Sales Obtained"
-            progress="0.50"
-            increase="+21%"
-            icon={
-              <PointOfSaleIcon
-                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-              />
-            }
-          />
-        </Box>
-        <Box
-          gridColumn="span 3"
-          backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <StatBox
-            title="32,441"
-            subtitle="New Clients"
-            progress="0.30"
-            increase="+5%"
-            icon={
-              <PersonAddIcon
-                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-              />
-            }
-          />
-        </Box>
-        <Box
-          gridColumn="span 3"
-          backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <StatBox
-            title="1,325,134"
-            subtitle="Traffic Received"
-            progress="0.80"
-            increase="+43%"
-            icon={
-              <TrafficIcon
-                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-              />
-            }
-          />
-        </Box>
+        {data.slice(0, 5).map((item, index) => ( 
+          <Box key={index} gridColumn="span 3" 
+            backgroundColor={colors.primary[400]} 
+            display="flex" 
+            alignItems="center" 
+            justifyContent="center" 
+            overflow="hidden" > 
+            
+            <StatBox title={item.nombre} 
+            progress={(item.presupuestoTotal - item.presupuestoEjecutado) / item.presupuestoTotal} 
+            subtitle={item.estado}
+            increase={item.porcentajeEjecucion+"% Gastado"} 
+            icon={ <LabelImportantOutlinedIcon 
+                sx={{ color: colors.greenAccent[600], fontSize: "26px" }} 
+                /> } /> 
+          </Box> ))}       
       </Box>
     </Box>
   );

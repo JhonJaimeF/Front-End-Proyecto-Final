@@ -2,9 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 
+// Función para formatear los valores en millones
+const formatToMillion = (value) => {
+  const million = value / 1000000;
+  if (million < 10) {
+    return `${million.toFixed(1)} Mill`;
+  } else {
+    return `${Math.floor(million)} Mill`;
+  }
+};
+
 const BarChart = ({ isDashboard = false }) => {
   const theme = useTheme();
-
 
   const [data, setData] = useState([]);
 
@@ -68,6 +77,7 @@ const BarChart = ({ isDashboard = false }) => {
         legendPosition: "middle",
         legendOffset: 10,  // Ajusta este valor para mover el título hacia arriba
         tickColor: theme.palette.mode === "dark" ? "#ffffff" : "#000000",
+        format: formatToMillion, // Usar la función de formato personalizada
       }}
       theme={{
         axis: {
