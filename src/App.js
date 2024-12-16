@@ -11,7 +11,7 @@ import Gastos from "./scenes/gastos";
 import Invoices from "./scenes/invoices";
 
 
-import FormRubors from "./scenes/formRubros";
+import FormRubros from "./scenes/formRubros";
 import FormGastos from "./scenes/formGastos";
 
 import Bar from "./scenes/bar";
@@ -37,7 +37,7 @@ function App() {
               <Route path="/rubros" element={<Rubros />} />
               <Route path="/gastos" element={<Gastos />} />
               <Route path="/invoices" element={<Invoices />} />
-              <Route path="/formRubros" element={<FormRubors />} />
+              <Route path="/formRubros" element={<FormRubros />} />
               <Route path="/formGastos" element={<FormGastos />} />
               <Route path="/bar" element={<Bar />} />
               <Route path="/pie" element={<Pie />} />

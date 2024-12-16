@@ -14,7 +14,7 @@ const Contacts = () => {
       try {
         const response = await fetch('http://158.247.122.111:8080/api/asignaciones');
         const data = await response.json();
-        setRows(data);
+        setRows(data.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }

@@ -15,7 +15,11 @@ const Form = () => {
       try {
         const response = await fetch("http://158.247.122.111:8080/api/rubros");
         const data = await response.json();
-        setRubros(data);
+        // Filtrar los rubros que no tengan el presupuesto ejecutado al 100%
+        const filteredRubros = data.data.filter(rubro => {
+          return rubro.porcentajeEjecucion < 100;
+        });
+        setRubros(filteredRubros);
       } catch (error) {
         console.error("Error al cargar los rubros:", error);
       }
@@ -24,6 +28,13 @@ const Form = () => {
   }, []);
 
   const handleFormSubmit = async (values, { resetForm }) => {
+    const rubro = rubros.find(rubro => rubro.id === values.rubroId);
+
+  if (rubro && values.montoTotal > rubro.presupuestoTotal - rubro.presupuestoEjecutado) {
+    // Mostrar la alerta de error antes de enviar el formulario
+    alert("El monto total excede el valor disponible del rubro");
+    return; // Evitar el envío del formulario
+  }
     try {
       const response = await fetch("http://158.247.122.111:8080/api/asignaciones", {
         method: "POST",
@@ -35,7 +46,9 @@ const Form = () => {
       if (response.ok) {
         alert("Asignación agregada correctamente");
         resetForm(); // Limpia los datos del formulario
+        window.location.reload();
       } else {
+        console.log(values);
         console.error("Error al agregar la asignación:", response.statusText);
         alert("Error al agregar la asignación. Intente nuevamente.");
       }
@@ -53,6 +66,7 @@ const Form = () => {
         onSubmit={handleFormSubmit}
         initialValues={initialValues}
         validationSchema={checkoutSchema}
+        context={{ rubros }} 
       >
         {({
           values,
@@ -182,7 +196,7 @@ const Form = () => {
   );
 };
 
-const estadoOptions = ["PENDIENTE", "EN_EJECUCION", "COMPLETADO", "SOBREPASADO"];
+const estadoOptions = ["ACTIVA", "AGOTADA", "PROXIMA_A_VENCER", "COMPLETADA"];
 
 const checkoutSchema = yup.object().shape({
   rubroId: yup.number().required("Campo obligatorio"),
@@ -202,7 +216,15 @@ const checkoutSchema = yup.object().shape({
   montoUtilizado: yup
     .number()
     .required("Campo obligatorio")
-    .min(0, "Debe ser mayor o igual a 0"),
+    .min(0, "Debe ser mayor o igual a 0")
+    .test(
+      "is-valid-monto-utilizado",
+      "El monto utilizado no puede ser mayor al monto total",
+      function (value) {
+        const montoTotal = this.parent.montoTotal;
+        return value <= montoTotal;
+      }
+    ),
   fechaInicio: yup
     .date()
     .required("Campo obligatorio")
@@ -232,6 +254,7 @@ const checkoutSchema = yup.object().shape({
     ),
   estado: yup.string().required("Campo obligatorio"),
 });
+
 
 const initialValues = {
   rubroId: "",

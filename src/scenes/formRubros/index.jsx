@@ -1,4 +1,4 @@
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, TextField, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -30,6 +30,8 @@ const Form = () => {
       alert("Error de conexión al servidor. Intente más tarde.");
     }
   };
+
+  const estadoOptions = ["PENDIENTE", "EN_EJECUCION", "COMPLETADO", "SOBREPASADO"];
 
   return (
     <Box m="20px">
@@ -117,19 +119,26 @@ const Form = () => {
                 sx={{ gridColumn: "span 2" }}
                 disabled // Hace que el campo sea solo lectura
               />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Estado"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.estado}
-                name="estado"
-                error={!!touched.estado && !!errors.estado}
-                helperText={touched.estado && errors.estado}
-                sx={{ gridColumn: "span 4" }}
-              />
+              <FormControl fullWidth sx={{ gridColumn: "span 4" }}>
+                <InputLabel>Estado</InputLabel>
+                <Select
+                  value={values.estado}
+                  name="estado"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  label="Estado"
+                  error={!!touched.estado && !!errors.estado}
+                >
+                  {estadoOptions.map((estado) => (
+                    <MenuItem key={estado} value={estado}>
+                      {estado}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {touched.estado && errors.estado && (
+                  <Box color="red" mt="4px">{errors.estado}</Box>
+                )}
+              </FormControl>
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">
@@ -160,7 +169,7 @@ const initialValues = {
   presupuestoTotal: 0,
   fechaInicio: "",
   fechaFin: "",
-  estado: "PENDIENTE",
+  estado: "PENDIENTE", // Valor por defecto
 };
 
 export default Form;

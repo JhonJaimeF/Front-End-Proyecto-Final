@@ -14,11 +14,7 @@ const Rubros = () => {
       try {
         const response = await fetch('http://158.247.122.111:8080/api/rubros');
         const data = await response.json();
-        if (Array.isArray(data)) {
-          setRows(data);
-        } else {
-          console.error('Expected data to be an array, but got:', typeof data);
-        }
+        setRows(data.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
