@@ -52,10 +52,10 @@ const Sidebar = () => {
           padding: "5px 35px 5px 20px !important",
         },
         "& .pro-inner-item:hover": {
-          color: "#868dfb !important",
+          color: "#EAD606 !important",
         },
         "& .pro-menu-item.active": {
-          color: "#6870fa !important",
+          color: "#EAD606 !important",
         },
       }}
     >
@@ -78,7 +78,6 @@ const Sidebar = () => {
                 ml="15px"
               >
                 <Typography variant="h3" color={colors.grey[100]}>
-                  INICIO
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />
@@ -96,7 +95,7 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Ed Roh
+                  Admin
                 </Typography>
               </Box>
             </Box>
