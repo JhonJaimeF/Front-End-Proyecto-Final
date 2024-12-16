@@ -1,17 +1,42 @@
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 import { tokens } from "../theme";
-import { mockBarData as data } from "../data/mockData";
 
 const BarChart = ({ isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  // Estado para los datos del gráfico
+  const [data, setData] = useState([]);
+
+  // Obtener datos desde la API de rubros
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://158.247.122.111:8080/api/rubros"); // Cambia a tu endpoint
+        const result = await response.json();
+
+        // Transformar los datos para el gráfico
+        const formattedData = result.data.map((item) => ({
+          nombre: item.nombre, // Identificador del rubro (eje X)
+          total: item.presupuestoTotal, // Presupuesto total
+          usado: item.porcentajeEjecucion, // Porcentaje de ejecución
+        }));
+
+        setData(formattedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <ResponsiveBar
       data={data}
       theme={{
-        // added
         axis: {
           domain: {
             line: {
@@ -39,33 +64,13 @@ const BarChart = ({ isDashboard = false }) => {
           },
         },
       }}
-      keys={["hot dog", "burger", "sandwich", "kebab", "fries", "donut"]}
-      indexBy="country"
+      keys={["total", "usado"]} // Claves para las barras
+      indexBy="nombre" // Eje X
       margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}
       valueScale={{ type: "linear" }}
       indexScale={{ type: "band", round: true }}
-      colors={{ scheme: "nivo" }}
-      defs={[
-        {
-          id: "dots",
-          type: "patternDots",
-          background: "inherit",
-          color: "#38bcb2",
-          size: 4,
-          padding: 1,
-          stagger: true,
-        },
-        {
-          id: "lines",
-          type: "patternLines",
-          background: "inherit",
-          color: "#eed312",
-          rotation: -45,
-          lineWidth: 6,
-          spacing: 10,
-        },
-      ]}
+      colors={({ id }) => (id === "total" ? "#a6cee3" : "#fb9a99")} // Colores
       borderColor={{
         from: "color",
         modifiers: [["darker", "1.6"]],
@@ -76,7 +81,7 @@ const BarChart = ({ isDashboard = false }) => {
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: isDashboard ? undefined : "country", // changed
+        legend: isDashboard ? undefined : "Rubros",
         legendPosition: "middle",
         legendOffset: 32,
       }}
@@ -84,17 +89,11 @@ const BarChart = ({ isDashboard = false }) => {
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: isDashboard ? undefined : "food", // changed
+        legend: isDashboard ? undefined : "Presupuesto",
         legendPosition: "middle",
         legendOffset: -40,
       }}
       enableLabel={false}
-      labelSkipWidth={12}
-      labelSkipHeight={12}
-      labelTextColor={{
-        from: "color",
-        modifiers: [["darker", 1.6]],
-      }}
       legends={[
         {
           dataFrom: "keys",
@@ -120,9 +119,9 @@ const BarChart = ({ isDashboard = false }) => {
         },
       ]}
       role="application"
-      barAriaLabel={function (e) {
-        return e.id + ": " + e.formattedValue + " in country: " + e.indexValue;
-      }}
+      barAriaLabel={(e) =>
+        `${e.id}: ${e.formattedValue} en rubro: ${e.indexValue}`
+      }
     />
   );
 };
