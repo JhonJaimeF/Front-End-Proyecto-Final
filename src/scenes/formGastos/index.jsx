@@ -262,7 +262,7 @@ const initialValues = {
   montoUtilizado: "",
   fechaInicio: "",
   fechaFin: "",
-  estado: "PENDIENTE",
+  estado: "ACTIVA",
 };
 
 export default Form;
