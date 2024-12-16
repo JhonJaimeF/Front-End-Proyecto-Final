@@ -25,8 +25,8 @@ const ProgressCircle = ({ size = "40" }) => {
     fetch('http://158.247.122.111:8080/api/rubros')
       .then(response => response.json())
       .then(data => {
-        const total = data.reduce((sum, item) => sum + item.presupuestoTotal, 0);
-        const executed = data.reduce((sum, item) => sum + item.presupuestoEjecutado, 0);
+        const total = data.data.reduce((sum, item) => sum + item.presupuestoTotal, 0);
+        const executed = data.data.reduce((sum, item) => sum + item.presupuestoEjecutado, 0);
         setTotalBudget(total);
         setExecutedBudget(executed);
         setProgress(executed / total);

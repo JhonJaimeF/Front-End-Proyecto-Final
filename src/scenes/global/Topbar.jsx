@@ -11,7 +11,7 @@ const Topbar = () => {
   const theme = useTheme();
   const colorMode = useContext(ColorModeContext);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [rubros, setRubros] = useState([]);
+  const [ setRubros] = useState([]);
   const [hasNewNotification, setHasNewNotification] = useState(false);
   const [notification, setNotification] = useState(null);
 
@@ -25,13 +25,15 @@ const Topbar = () => {
 
   const fetchRubros = async () => {
     try {
-      //const response = await fetch("http://158.247.122.111:8080/api/rubros");
-      const response = await fetch("http://localhost:8080/api/rubros");
+      const response = await fetch("http://158.247.122.111:8080/api/rubros");
       const data = await response.json();
-      setRubros(data);
+      
+      
+      setRubros(data.data);
+      console.log("", data);
 
       // Check if any rubro has an execution percentage greater than 80
-      const highExecutionRubro = data.find((rubro) => rubro.porcentajeEjecucion > 80);
+      const highExecutionRubro = data.data.find((rubro) => rubro.porcentajeEjecucion > 80);
       if (highExecutionRubro) {
         setHasNewNotification(true);
         setNotification(highExecutionRubro);

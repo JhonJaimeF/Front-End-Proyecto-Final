@@ -17,8 +17,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        //const response = await fetch('http://158.247.122.111:8080/api/rubros');
-        const response = await fetch('http://localhost:8080/api/rubros');
+        const response = await fetch('http://158.247.122.111:8080/api/rubros');
         const result = await response.json();
         console.log(result.data);
         
