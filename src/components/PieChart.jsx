@@ -1,11 +1,43 @@
+import React, { useEffect, useState } from "react";
 import { ResponsivePie } from "@nivo/pie";
 import { tokens } from "../theme";
 import { useTheme } from "@mui/material";
-import { mockPieData as data } from "../data/mockData";
 
 const PieChart = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  // Estado para los datos del gráfico
+  const [data, setData] = useState([]);
+
+  // Obtener datos desde la API de rubros
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://158.247.122.111:8080/api/rubros"); // Cambia a tu endpoint
+        const result = await response.json();
+
+        // Calcular el total del presupuesto y los porcentajes
+        const totalPresupuesto = result.data.reduce(
+          (acc, item) => acc + item.presupuestoTotal,
+          0
+        );
+
+        const formattedData = result.data.map((item) => ({
+          id: item.nombre, // Nombre del rubro
+          label: item.nombre, // Etiqueta para el gráfico
+          value: ((item.presupuestoTotal / totalPresupuesto) * 100).toFixed(2), // Porcentaje del total
+        }));
+
+        setData(formattedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <ResponsivePie
       data={data}

@@ -157,7 +157,7 @@ const checkoutSchema = yup.object().shape({
   presupuestoTotal: yup
     .number()
     .required("Campo obligatorio")
-    .min(0, "Debe ser mayor o igual a 0")
+    .min(100000, "Debe ser mayor de Cien Mil o igual a 0")
     .notOneOf([0], "El presupuesto total no puede ser igual a cero"),
   fechaInicio: yup.date().required("Campo obligatorio"),
   fechaFin: yup.date().required("Campo obligatorio"),

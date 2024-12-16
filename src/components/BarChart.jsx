@@ -5,24 +5,27 @@ import { tokens } from "../theme";
 
 const BarChart = ({ isDashboard = false }) => {
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+  const colors = tokens(theme.palette.mode); // Define los colores dependiendo del tema
 
-  // Estado para los datos del gráfico
   const [data, setData] = useState([]);
 
-  // Obtener datos desde la API de rubros
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://158.247.122.111:8080/api/rubros"); // Cambia a tu endpoint
+        const response = await fetch("http://158.247.122.111:8080/api/rubros");
         const result = await response.json();
 
-        // Transformar los datos para el gráfico
-        const formattedData = result.data.map((item) => ({
-          nombre: item.nombre, // Identificador del rubro (eje X)
-          total: item.presupuestoTotal, // Presupuesto total
-          usado: item.porcentajeEjecucion, // Porcentaje de ejecución
-        }));
+        const formattedData = result.data.map((item) => {
+          const total = item.presupuestoTotal || 0;
+          const usado = item.presupuestoEjecutado || 0;
+          const restante = total - usado;
+
+          return {
+            nombre: item.nombre || "Desconocido",
+            usado,
+            restante,
+          };
+        });
 
         setData(formattedData);
       } catch (error) {
@@ -36,41 +39,13 @@ const BarChart = ({ isDashboard = false }) => {
   return (
     <ResponsiveBar
       data={data}
-      theme={{
-        axis: {
-          domain: {
-            line: {
-              stroke: colors.grey[100],
-            },
-          },
-          legend: {
-            text: {
-              fill: colors.grey[100],
-            },
-          },
-          ticks: {
-            line: {
-              stroke: colors.grey[100],
-              strokeWidth: 1,
-            },
-            text: {
-              fill: colors.grey[100],
-            },
-          },
-        },
-        legends: {
-          text: {
-            fill: colors.grey[100],
-          },
-        },
-      }}
-      keys={["total", "usado"]} // Claves para las barras
-      indexBy="nombre" // Eje X
+      keys={["usado", "restante"]}
+      indexBy="nombre"
       margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}
       valueScale={{ type: "linear" }}
       indexScale={{ type: "band", round: true }}
-      colors={({ id }) => (id === "total" ? "#a6cee3" : "#fb9a99")} // Colores
+      colors={({ id }) => (id === "usado" ? "#fb9a99" : "#a6cee3")}
       borderColor={{
         from: "color",
         modifiers: [["darker", "1.6"]],
@@ -84,6 +59,7 @@ const BarChart = ({ isDashboard = false }) => {
         legend: isDashboard ? undefined : "Rubros",
         legendPosition: "middle",
         legendOffset: 32,
+        tickColor: theme.palette.mode === "dark" ? "#ffffff" : "#000000", // Ajustar color del eje X según el tema
       }}
       axisLeft={{
         tickSize: 5,
@@ -92,6 +68,35 @@ const BarChart = ({ isDashboard = false }) => {
         legend: isDashboard ? undefined : "Presupuesto",
         legendPosition: "middle",
         legendOffset: -40,
+        tickColor: theme.palette.mode === "dark" ? "#ffffff" : "#000000", // Ajustar color del eje Y según el tema
+      }}
+      theme={{
+        axis: {
+          domain: {
+            line: {
+              stroke: theme.palette.mode === "dark" ? "#ffffff" : "#000000", // Ajustar color de la línea del eje
+            },
+          },
+          ticks: {
+            line: {
+              stroke: theme.palette.mode === "dark" ? "#ffffff" : "#000000", // Ajustar color de las líneas de las marcas
+              strokeWidth: 1,
+            },
+            text: {
+              fill: theme.palette.mode === "dark" ? "#ffffff" : "#000000", // Ajustar color del texto de las marcas
+            },
+          },
+          legend: {
+            text: {
+              fill: theme.palette.mode === "dark" ? "#ffffff" : "#000000", // Ajustar color del texto de la leyenda
+            },
+          },
+        },
+        legends: {
+          text: {
+            fill: theme.palette.mode === "dark" ? "#ffffff" : "#000000", // Ajustar color del texto en las leyendas
+          },
+        },
       }}
       enableLabel={false}
       legends={[
