@@ -54,10 +54,11 @@ const Dashboard = () => {
       try {
         const response = await fetch('http://158.247.122.111:8080/api/asignaciones');
         const result = await response.json();
+        const dataFinal = result.data;
 
         // Transformar las asignaciones para incluir los nombres de los rubros
         const assignmentsWithNames = await Promise.all(
-          result.data.map(async (assignment) => {
+          dataFinal.map(async (assignment) => {
             const rubroName = await getRubroName(assignment.rubroId);
             return {
               txId: rubroName, // Nombre del rubro
